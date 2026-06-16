@@ -8,9 +8,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 include 'db_connect.php';
 
-/* =========================
-   LOGIN CHECK
-========================= */
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: login_user.php");
     exit();
@@ -18,9 +15,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
 $user_id = $_SESSION['user_id'];
 
-/* =========================
-   CHECK IF ALREADY SUBMITTED
-========================= */
 $alreadySubmitted = false;
 
 $check = $conn->prepare("SELECT id FROM survey_responses WHERE user_id = ?");
