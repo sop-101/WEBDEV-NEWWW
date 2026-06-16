@@ -58,11 +58,6 @@ body {
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
-
-/* ============================================
-   PAGE WRAPPER (centers the login card)
-   ============================================ */
-
 .page-wrapper {
   flex: 1;
   display: flex;
