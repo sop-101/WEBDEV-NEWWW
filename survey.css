@@ -1,3 +1,7 @@
+/* ============================================
+   BARANGAY HEALTH SURVEY - STYLESHEET
+   ============================================ */
+
 * {
     margin: 0;
     padding: 0;
@@ -10,6 +14,11 @@ body {
     color: #333;
     min-height: 100vh;
 }
+
+/* ============================================
+   HEADER
+   ============================================ */
+
 .header {
     background-color: #1a2332;
     display: flex;
@@ -61,7 +70,7 @@ body {
    ============================================ */
 
 .survey-container {
-    max-width: 600px;
+    max-width: 700px;
     margin: 30px auto;
     padding: 0 20px;
 }
@@ -72,6 +81,10 @@ body {
     padding: 30px 35px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
+
+/* ============================================
+   SURVEY HEADER
+   ============================================ */
 
 .survey-header {
     text-align: center;
@@ -97,6 +110,10 @@ body {
     font-style: italic;
 }
 
+/* ============================================
+   SECTIONS
+   ============================================ */
+
 .section {
     margin-bottom: 20px;
 }
@@ -113,6 +130,10 @@ body {
     border-radius: 3px;
 }
 
+/* ============================================
+   QUESTIONS
+   ============================================ */
+
 .question {
     margin-bottom: 18px;
     padding-left: 5px;
@@ -125,6 +146,15 @@ body {
     margin-bottom: 10px;
     font-weight: 500;
 }
+
+.question-number {
+    font-weight: 700;
+    color: #1a2332;
+}
+
+/* ============================================
+   OPTIONS / RADIO BUTTONS & CHECKBOXES
+   ============================================ */
 
 .options {
     display: flex;
@@ -143,7 +173,8 @@ body {
     line-height: 1.4;
 }
 
-.option input[type="radio"] {
+.option input[type="radio"],
+.option input[type="checkbox"] {
     width: 12px;
     height: 12px;
     accent-color: #333;
@@ -151,6 +182,141 @@ body {
     margin: 0;
     margin-top: 1px;
 }
+
+/* ============================================
+   TEXT INPUTS
+   ============================================ */
+
+.text-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    margin-top: 5px;
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: #1a2332;
+}
+
+.textarea-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    margin-top: 5px;
+    resize: vertical;
+    min-height: 60px;
+}
+
+.textarea-input:focus {
+    outline: none;
+    border-color: #1a2332;
+}
+
+/* ============================================
+   TABLE STYLES (For Awareness Questions)
+   ============================================ */
+
+.awareness-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 10px;
+}
+
+.awareness-table th,
+.awareness-table td {
+    border: 1px solid #bbb;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.awareness-table th {
+    background-color: #1a2332;
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.awareness-table td {
+    background-color: #f5f5f5;
+}
+
+.awareness-table .checkbox-cell {
+    text-align: center;
+    width: 60px;
+}
+
+.awareness-table input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #333;
+    cursor: pointer;
+}
+
+/* ============================================
+   MEDICAL RATIONALE & REFERENCE
+   ============================================ */
+
+.medical-rationale {
+    font-size: 9px;
+    color: #666;
+    font-style: italic;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background-color: #f0f0f0;
+    border-left: 3px solid #1a2332;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.5;
+}
+
+.medical-rationale strong {
+    color: #1a2332;
+    font-style: normal;
+}
+
+.reference {
+    font-size: 8px;
+    color: #888;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.reference a {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.reference a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   CONDITIONAL FIELDS
+   ============================================ */
+
+.conditional-field {
+    margin-top: 8px;
+    padding-left: 20px;
+    display: none;
+}
+
+.conditional-field.active {
+    display: block;
+}
+
+/* ============================================
+   BUTTON GROUP
+   ============================================ */
 
 .button-group {
     display: flex;
@@ -214,6 +380,56 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
+/* ============================================
+   RESULTS SECTION
+   ============================================ */
+
+.results-section {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.results-section h2 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a2332;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.score-display {
+    font-size: 48px;
+    font-weight: 800;
+    color: #ff4757;
+    margin: 10px 0;
+}
+
+.category-display {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2332;
+    margin-bottom: 10px;
+    padding: 8px 20px;
+    background-color: #f0f0f0;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.message-display {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
 @media (max-width: 600px) {
     .survey-form {
         padding: 20px 20px;
@@ -232,5 +448,14 @@ body {
     .btn {
         width: 100%;
         min-width: unset;
+    }
+
+    .awareness-table {
+        font-size: 9px;
+    }
+
+    .awareness-table th,
+    .awareness-table td {
+        padding: 5px;
     }
 }
