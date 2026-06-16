@@ -87,9 +87,6 @@ body {
     box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
 }
 
-/* ============================================
-   HERO SECTION
-   ============================================ */
 .hero {
    height: 500px;
   background:
@@ -146,9 +143,6 @@ body {
     box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
 }
 
-/* ============================================
-   COMMUNITY HEALTH ALERT SECTION (POLISHED GRAY)
-   ============================================ */
 .health-alert-section {
     background: #5a626a;
     padding: 55px 40px;
@@ -159,7 +153,6 @@ body {
     margin: 0 auto;
 }
 
-/* Header with Alert Icon */
 .health-alert-header {
     display: flex;
     align-items: flex-start;
@@ -293,9 +286,7 @@ body {
     margin: 0;
 }
 
-/* ============================================
-   DISEASE PREVENTION GUIDE SECTION
-   ============================================ */
+
 .prevention-section {
     background: #f8fafc;
     padding: 60px 40px;
@@ -429,9 +420,6 @@ body {
     font-size: 15px;
 }
 
-/* ==========================================
-   TRUSTED HEALTH WEBSITES
-========================================== */
 
 .trusted-sites-section{
     padding:60px 40px;
@@ -492,9 +480,6 @@ body {
     font-size:15px;
 }
 
-/* ============================================
-   CONTENT SECTION
-   ============================================ */
 .content {
     padding: 80px 40px;
     background: #ffffff;
@@ -530,9 +515,6 @@ body {
     color: #be123c;
 }
 
-/* ============================================
-   FOOTER
-   ============================================ */
 .hotline-footer {
     background: #1e293b;
     color: white;
@@ -570,9 +552,6 @@ body {
     background: linear-gradient(90deg, #f43f5e 0%, #3b82f6 100%);
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 @media (max-width: 992px) {
     .disease-cards {
         grid-template-columns: repeat(2, 1fr);
