@@ -1,0 +1,627 @@
+/* ============================================
+   BRGY 727 - Homepage Styles (Polished Gray)
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 28px;
+    color: #1e293b;
+}
+
+.logo-text h1 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: 1px;
+    line-height: 1.2;
+}
+
+.logo-text p {
+    font-size: 10px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    gap: 10px;
+}
+
+.login-btn {
+    display: inline-block;
+    padding: 10px 24px;
+    background: #f43f5e;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background: #e11d48;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.hero {
+   height: 500px;
+  background:
+    linear-gradient(rgba(20, 30, 48, 0.75), rgba(20, 30, 48, 0.85)),
+    url("https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=1600")
+    center/cover;
+    padding: 100px 40px;
+    text-align: center;
+    color: white;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.survey-btn {
+    display: inline-block;
+    padding: 14px 40px;
+    background: #f43f5e;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.survey-btn:hover {
+    background: #e11d48;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
+}
+
+/* ============================================
+   COMMUNITY HEALTH ALERT SECTION (POLISHED GRAY)
+   ============================================ */
+.health-alert-section {
+    background: #5a626a;
+    padding: 55px 40px;
+}
+
+.health-alert-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header with Alert Icon */
+.health-alert-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 35px;
+}
+
+.alert-icon-circle {
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.health-alert-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #f87171;
+    margin: 0 0 8px 0;
+}
+
+.health-alert-desc {
+    font-size: 15px;
+    color: #d1d5db;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 850px;
+}
+
+/* Disease Cards Grid */
+.disease-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.disease-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 22px 24px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    min-height: 125px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.disease-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    border-color: #d1d5db;
+}
+
+.disease-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+}
+
+.disease-card p {
+    font-size: 13.5px;
+    color: #4b5563;
+    line-height: 1.55;
+    margin: 0;
+}
+.disease-tab {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.disease-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.disease-modal-content {
+    background: white;
+    width: 450px;
+    max-width: 90%;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+}
+
+.disease-modal-content h3 {
+    margin-top: 0;
+    color: #1e40af;
+}
+
+.contact-number {
+    font-size: 22px;
+    font-weight: bold;
+    color: #dc2626;
+    margin: 20px 0;
+}
+
+.disease-modal-content button {
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+}
+
+/* Health Footer */
+.health-footer {
+    text-align: center;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.health-footer p {
+    font-size: 13px;
+    color: #f87171;
+    margin: 0;
+}
+
+/* ============================================
+   DISEASE PREVENTION GUIDE SECTION
+   ============================================ */
+.prevention-section {
+    background: #f8fafc;
+    padding: 60px 40px;
+}
+
+.prevention-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.prevention-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.prevention-header h2 {
+    color: #1e40af;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.prevention-header p {
+    color: #64748b;
+    font-size: 16px;
+}
+
+.disease-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.disease-tab {
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.disease-tab:hover,
+.disease-tab.active {
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
+}
+
+.prevention-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.prevention-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    border: 2px solid #fecaca;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.prevention-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.prevention-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.prevention-card-header h4 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.priority-badge {
+    background: #dc2626;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.prevention-card p {
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.prevention-tip {
+    background: #eff6ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 4px solid #3b82f6;
+}
+
+.prevention-tip-icon {
+    width: 40px;
+    height: 40px;
+    background: #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.prevention-tip p {
+    margin: 0;
+    color: #1e40af;
+    font-size: 15px;
+}
+
+/* ==========================================
+   TRUSTED HEALTH WEBSITES
+========================================== */
+
+.trusted-sites-section{
+    padding:60px 40px;
+    background:#f8fafc;
+}
+
+.trusted-sites-container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.trusted-sites-container h2{
+    text-align:center;
+    color:#1e293b;
+    margin-bottom:40px;
+    font-size:32px;
+}
+
+.trusted-sites-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(400px,1fr));
+    gap:20px;
+}
+
+.trusted-site-card{
+    display:block;
+    text-decoration:none;
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    border:1px solid #cbd5e1;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.trusted-site-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 12px 25px rgba(0,0,0,.15);
+    border-color:#2563eb;
+}
+
+.trusted-site-card h3{
+    margin:0 0 10px;
+    color:#1e293b;
+    font-size:22px;
+}
+
+.trusted-site-card p{
+    margin:0;
+    color:#64748b;
+    line-height:1.6;
+}
+
+.trusted-sites-footer{
+    margin-top:40px;
+    text-align:center;
+    color:#475569;
+    font-size:15px;
+}
+
+/* ============================================
+   CONTENT SECTION
+   ============================================ */
+.content {
+    padding: 80px 40px;
+    background: #ffffff;
+}
+
+.content-container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.content-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 30px;
+}
+
+.content-paragraph {
+    font-size: 16px;
+    color: #475569;
+    margin-bottom: 15px;
+    line-height: 1.7;
+}
+
+.content-highlight {
+    margin-top: 25px;
+    padding: 20px;
+    background: #fef2f2;
+    border-radius: 10px;
+    border-left: 4px solid #f43f5e;
+    font-size: 18px;
+    color: #be123c;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.hotline-footer {
+    background: #1e293b;
+    color: white;
+    padding: 50px 40px;
+    text-align: center;
+}
+
+.footer-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.footer-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.footer-description {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.contact-item {
+    font-size: 14px;
+    margin: 8px 0;
+    opacity: 0.9;
+}
+
+.bottom-accent {
+    height: 6px;
+    background: linear-gradient(90deg, #f43f5e 0%, #3b82f6 100%);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 992px) {
+    .disease-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .hero {
+        padding: 60px 20px;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .health-alert-section {
+        padding: 40px 20px;
+    }
+
+    .health-alert-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .health-alert-title {
+        font-size: 24px;
+    }
+
+    .disease-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .prevention-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .disease-tabs {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .content {
+        padding: 50px 20px;
+    }
+}
