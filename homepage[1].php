@@ -1,6 +1,4 @@
 <?php
-// BRGY 727 - Community Health Awareness System
-// Homepage with separated CSS
 ?>
 <!DOCTYPE html>
 <html lang="tl">
@@ -108,9 +106,7 @@
         </div>
     </section>
 
-    <!-- ============================================
-         DISEASE PREVENTION GUIDE
-         ============================================ -->
+    <!-- DISEASE PREVENTION GUIDE  -->
 <?php
 
 $diseases = [
@@ -348,9 +344,7 @@ window.addEventListener('click', function(e){
 });
 
 </script>
-     <!-- ============================================
-         TRUSTED WEBSITES
-         ============================================ -->
+     <!-- TRUSTED WEBSITES -->
     <section class="trusted-sites-section">
 
     <div class="trusted-sites-container">
@@ -467,9 +461,7 @@ window.addEventListener('click', function(e){
         </div>
     </section>
 
-    <!-- ============================================
-         FOOTER
-         ============================================ -->
+    <!-- FOOTER -->
     <footer class="hotline-footer">
         <div class="footer-container">
             <h2 class="footer-title">BRGY 727 MONITORING SYSTEM</h2>
