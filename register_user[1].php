@@ -185,31 +185,33 @@ $success = "";
 .show-password-option input{
     margin-right:8px;
 }
-         .btn-register{
-            width:100%;
-            padding:16px;
-            background:#e94560;       
-            color:white;
-            border:none;
-            border-radius:8px;
-            font-size:16px;
-            font-weight:600;
-            cursor:pointer;
-            transition:0.3s;
-            display:block;              
-            margin:0 auto;            
-            text-align:center;
-        }
+        .btn-register {
+    width: 100%;
+    padding: 16px;
+    background: #e94560;          
+    color: white;                  
+    border: none;                
+    border-radius: 12px;          
+    font-size: 16px;
+    font-weight: 700;              
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
 
-        .btn-register:hover{
-            background:#c93650;        
-            transform:translateY(-2px);
-            box-shadow:0 4px 15px rgba(233,69,96,0.4);
-        }
+.btn-register:hover {
+    background: #d63850;            
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.35);
+}
 
-        .btn-register:active{
-            transform:translateY(0);
-        }
+.btn-register:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(233, 69, 96, 0.25);
+}
 
     </style>
 </head>
@@ -304,7 +306,7 @@ $success = "";
         Show Passwords
     </label>
     
-     <button type="submit" class="btn-register">Create Account</button>
+     <button type="submit" class="btn-register">SUBMIT</button>
 </div>
 
     </form>
