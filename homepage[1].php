@@ -6,14 +6,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Brgy 727 Community Health Awareness System</title>
-    <!-- External CSS - ALL styles separated from PHP -->
     <link rel="stylesheet" href="homepage.css">
 </head>
 
 <body>
-    <!-- ============================================
-         HEADER
-         ============================================ -->
     <header class="header">
         <div class="header-left">
             <div class="logo-section">
@@ -30,10 +26,7 @@
             <a href="login.php" class="login-btn"><b>ADMIN</b></a>
         </div>
     </header>
-
-    <!-- ============================================
-         HERO SECTION
-         ============================================ -->
+    
     <section class="hero">
         <div class="hero-content">
             <h1>COMMUNITY AWARENESS<br>MONITORING SYSTEM</h1>
@@ -47,9 +40,6 @@
         </div>
     </section>
 
-    <!-- ============================================
-         COMMUNITY HEALTH ALERT (POLISHED GRAY)
-         ============================================ -->
     <section class="health-alert-section">
         <div class="health-alert-container">
 
