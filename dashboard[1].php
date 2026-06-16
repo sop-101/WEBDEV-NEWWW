@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// 🔒 LOGIN CHECK — PHP Session based (connected to login.php)
 if (!isset($_SESSION['adminLoggedIn']) || $_SESSION['adminLoggedIn'] !== true) {
     header("Location: login.php");
     exit();
