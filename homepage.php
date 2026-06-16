@@ -433,17 +433,15 @@ window.addEventListener('click', function(e){
     </div>
 
 </section>
-    <!-- ============================================
-         CONTENT SECTION
-         ============================================ -->
+
     <section class="content">
         <div class="content-container">
             <h2 class="content-title">Kahalagahan ng Kalusugan at Kahandaan</h2>
             <p class="content-paragraph">
-                Ang pagiging handa ay mahalaga upang makaiwas sa panganib sa oras ng sakuna.
+               Ang pagiging handa sa kaalaman sa kalusugan ay mahalaga upang makaiwas sa panganib sa oras ng sakit at sakuna.
             </p>
             <p class="content-paragraph">
-                Sa tamang impormasyon, mas mabilis ang pagresponde ng barangay.
+                Sa tamang impormasyon, mas mabilis ang pagresponde ng barangay sa mga pangangailangang pangkalusugan ng komunidad.
             </p>
             <div class="content-highlight">
                 <b>Ang paghahanda ngayon ay pagliligtas bukas.</b>
