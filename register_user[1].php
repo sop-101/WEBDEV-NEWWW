@@ -185,6 +185,32 @@ $success = "";
 .show-password-option input{
     margin-right:8px;
 }
+         .btn-register{
+            width:100%;
+            padding:16px;
+            background:#e94560;       
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-size:16px;
+            font-weight:600;
+            cursor:pointer;
+            transition:0.3s;
+            display:block;              
+            margin:0 auto;            
+            text-align:center;
+        }
+
+        .btn-register:hover{
+            background:#c93650;        
+            transform:translateY(-2px);
+            box-shadow:0 4px 15px rgba(233,69,96,0.4);
+        }
+
+        .btn-register:active{
+            transform:translateY(0);
+        }
+
     </style>
 </head>
 
@@ -277,6 +303,8 @@ $success = "";
         <input type="checkbox" onclick="togglePasswords()">
         Show Passwords
     </label>
+    
+     <button type="submit" class="btn-register">Create Account</button>
 </div>
 
     </form>
