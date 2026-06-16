@@ -10,11 +10,6 @@ body {
     color: #333;
     min-height: 100vh;
 }
-
-/* ============================================
-   HEADER
-   ============================================ */
-
 .header {
     background-color: #1a2332;
     display: flex;
@@ -78,10 +73,6 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* ============================================
-   SURVEY HEADER
-   ============================================ */
-
 .survey-header {
     text-align: center;
     margin-bottom: 25px;
@@ -106,10 +97,6 @@ body {
     font-style: italic;
 }
 
-/* ============================================
-   SECTIONS
-   ============================================ */
-
 .section {
     margin-bottom: 20px;
 }
@@ -126,10 +113,6 @@ body {
     border-radius: 3px;
 }
 
-/* ============================================
-   QUESTIONS
-   ============================================ */
-
 .question {
     margin-bottom: 18px;
     padding-left: 5px;
@@ -142,10 +125,6 @@ body {
     margin-bottom: 10px;
     font-weight: 500;
 }
-
-/* ============================================
-   OPTIONS / RADIO BUTTONS
-   ============================================ */
 
 .options {
     display: flex;
@@ -172,10 +151,6 @@ body {
     margin: 0;
     margin-top: 1px;
 }
-
-/* ============================================
-   BUTTON GROUP
-   ============================================ */
 
 .button-group {
     display: flex;
@@ -238,10 +213,6 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 
 @media (max-width: 600px) {
     .survey-form {
