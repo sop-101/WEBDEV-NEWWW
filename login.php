@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </form>
 
             <div class="back-link">
-                <a href="homepage.php">← Back to Homepage</a>
+                <a href="index.php">← Back to Homepage</a>
             </div>
         </div>
     </div>
