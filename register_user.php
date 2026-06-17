@@ -19,7 +19,7 @@ $success = "";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account - Brgy 727</title>
-    <link rel="stylesheet" href="register_user.css">   
+    <link rel="stylesheet" href="registeruser.css">   
 </head>
 <body>
 
@@ -37,11 +37,7 @@ $success = "";
         <div class="error-message">
             <?php echo htmlspecialchars($error); ?>
         </div>
-        <h2>Create Account</h2>
-
-        <p class="subtitle">
-            Register to access the survey system.
-        </p>
+        <h2>Create Account</h2>0
 
         <?php if (!empty($error)): ?>
             <div class="error-message">
