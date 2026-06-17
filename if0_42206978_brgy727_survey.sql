@@ -1,0 +1,85 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  username VARCHAR(50) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  full_name VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  username VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  firstname VARCHAR(255) NOT NULL,
+  lastname VARCHAR(255) NOT NULL,
+  middlename VARCHAR(255) DEFAULT NULL,
+  suffix VARCHAR(255) DEFAULT NULL,
+  fullname VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS email VARCHAR(255) NOT NULL AFTER password,
+ADD COLUMN IF NOT EXISTS firstname VARCHAR(255) DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS lastname VARCHAR(255) DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS middlename VARCHAR(255) DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS suffix VARCHAR(255) DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS fullname VARCHAR(255) DEFAULT NULL;
+
+CREATE TABLE IF NOT EXISTS admins (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS survey_responses;
+
+CREATE TABLE survey_responses (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    user_id INT(11) NOT NULL DEFAULT 0,
+    full_name VARCHAR(255) NOT NULL,
+    age INT(3) NOT NULL,
+    gender VARCHAR(50) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    contact VARCHAR(50) NOT NULL,
+    health_status VARCHAR(50) NOT NULL,
+    conditions VARCHAR(255) NOT NULL DEFAULT 'None',
+    checkups VARCHAR(10) NOT NULL,
+    illness_6mo VARCHAR(10) NOT NULL,
+    illness_specify VARCHAR(255) DEFAULT NULL,
+    q1 INT(2) NOT NULL DEFAULT 0,
+    q2 INT(2) NOT NULL DEFAULT 0,
+    q3 INT(2) NOT NULL DEFAULT 0,
+    q4 INT(2) NOT NULL DEFAULT 0,
+    q5 INT(2) NOT NULL DEFAULT 0,
+    q6 INT(2) NOT NULL DEFAULT 0,
+    q7 INT(2) NOT NULL DEFAULT 0,
+    q8 INT(2) NOT NULL DEFAULT 0,
+    q9 INT(2) NOT NULL DEFAULT 0,
+    q10 INT(2) NOT NULL DEFAULT 0,
+    aware_dengue VARCHAR(10) NOT NULL DEFAULT 'No',
+    aware_tb VARCHAR(10) NOT NULL DEFAULT 'No',
+    aware_diabetes VARCHAR(10) NOT NULL DEFAULT 'No',
+    aware_hypertension VARCHAR(10) NOT NULL DEFAULT 'No',
+    info_source VARCHAR(100) NOT NULL,
+    info_source_other VARCHAR(255) DEFAULT NULL,
+    sufficient_knowledge VARCHAR(50) NOT NULL,
+    interested_seminars VARCHAR(10) NOT NULL,
+    other_programs TEXT DEFAULT NULL,
+    total_score INT(5) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Inserts your admin username and a secure password placeholder
+INSERT INTO admins (username, password) 
+VALUES ('ica_admin', '$2y$10$xyzSomeDummyHashToKeepVerifyHappy')
+ON DUPLICATE KEY UPDATE username=username;
