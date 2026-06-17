@@ -1,14 +1,12 @@
 <?php
+$servername = "sql303.infinityfree.com";
+$username = "if0_42193756";
+$password = "yuna010625"; 
+$dbname = "if0_42193756_brgy727_survey";
 
-$host = "sql210.infinityfree.com";
-$username = "if0_42204631";
-$password = "WEBDEVGROUP2";
-$database = "if0_42204631_surveydb";
-
-$conn = new mysqli($host, $username, $password, $database);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-    die("DB Connection Failed: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
-
 ?>
