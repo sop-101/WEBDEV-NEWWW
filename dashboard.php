@@ -42,7 +42,7 @@ $result = $conn->query("SELECT * FROM survey_responses ORDER BY id DESC");
     <header class="header">
         <h1>BRGY 727 Health Administration Panel</h1>
         <div class="header-actions">
-            <a href="homepage.php" class="btn home-btn">Homepage</a>
+            <a href="index.php" class="btn home-btn">Homepage</a>
             <a href="survey.php" class="btn home-btn">View Survey</a>
         </div>
     </header>
