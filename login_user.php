@@ -1,173 +1,195 @@
-<?php
-session_start();
-include 'db_connect.php';
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
 
-$error = '';
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(
+        135deg,
+        #0f172a,
+        #172554,
+        #1e293b
+    );
+    padding:20px;
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+.login-container{
+    width:100%;
+    max-width:500px;
+    background:#ffffff;
+    border-radius:25px;
+    padding:45px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+    animation:fadeIn .5s ease;
+}
 
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
+.logo-section{
+    text-align:center;
+    margin-bottom:25px;
+}
 
-    if (empty($email) || empty($password)) {
+.logo-icon{
+    width:80px;
+    height:80px;
+    margin:auto;
+    border-radius:50%;
+    background:linear-gradient(
+        135deg,
+        #e94560,
+        #ff6b81
+    );
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:36px;
+    margin-bottom:15px;
+}
 
-        $error = "Please enter your email and password.";
+.logo-section h1{
+    font-size:42px;
+    color:#0f172a;
+    font-weight:800;
+}
 
-    } else {
+.logo-section p{
+    color:#64748b;
+    margin-top:5px;
+}
 
-        $stmt = $conn->prepare("
-            SELECT id, fullname, email, password
-            FROM users
-            WHERE email = ?
-        ");
+.login-title{
+    text-align:center;
+    margin-top:10px;
+    margin-bottom:10px;
+    color:#0f172a;
+}
 
-        if (!$stmt) {
-            die("Database Error: " . $conn->error);
-        }
+.subtitle{
+    text-align:center;
+    color:#64748b;
+    margin-bottom:30px;
+}
 
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
+.error-message{
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:20px;
+    text-align:center;
+}
 
-        $result = $stmt->get_result();
+.form-group{
+    margin-bottom:18px;
+}
 
-        if ($result->num_rows === 1) {
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    color:#334155;
+    font-weight:600;
+}
 
-            $user = $result->fetch_assoc();
+.form-group input{
+    width:100%;
+    padding:15px;
+    border:2px solid #e2e8f0;
+    border-radius:12px;
+    font-size:15px;
+    transition:.3s;
+}
 
-            if (password_verify($password, $user['password'])) {
+.form-group input:focus{
+    outline:none;
+    border-color:#e94560;
+    box-shadow:0 0 0 5px rgba(233,69,96,.15);
+}
 
-                session_regenerate_id(true);
+.show-password{
+    margin-bottom:20px;
+    color:#475569;
+    font-size:14px;
+}
 
-                $_SESSION['logged_in'] = true;
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['fullname'];
-                $_SESSION['user_email'] = $user['email'];
+.btn-login{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(
+        135deg,
+        #e94560,
+        #ff6b81
+    );
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.3s;
+}
 
-                header("Location: survey.php");
-                exit();
+.btn-login:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(233,69,96,.35);
+}
 
-            } else {
+.register-link{
+    text-align:center;
+    margin-top:25px;
+}
 
-                $error = "Invalid email or password.";
+.register-link a{
+    color:#e94560;
+    text-decoration:none;
+    font-weight:700;
+}
 
-            }
+.admin-link{
+    text-align:center;
+    margin-top:12px;
+}
 
-        } else {
+.admin-link a{
+    color:#64748b;
+    text-decoration:none;
+}
 
-            $error = "Invalid email or password.";
+.admin-link a:hover{
+    color:#e94560;
+}
 
-        }
+.login-footer{
+    margin-top:25px;
+    text-align:center;
+    color:#94a3b8;
+    font-size:13px;
+}
 
-        $stmt->close();
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
     }
 }
 
-$conn->close();
-?>
+@media(max-width:600px){
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BRGY 727 - User Login</title>
-<link rel="stylesheet" href="loginuser.css">
-</head>
-<body>
+    .login-container{
+        padding:30px;
+    }
 
-<div class="login-container">
+    .logo-section h1{
+        font-size:32px;
+    }
 
-    <div class="logo-section">
-
-        <div class="logo-icon">
-            ⚕
-        </div>
-
-        <h1>BRGY 727</h1>
-        <p>Health Monitoring System</p>
-
-    </div>
-
-    <h2 class="login-title">User Login</h2>
-
-    <p class="subtitle">
-        Access community surveys and health records.
-    </p>
-
-    <?php if(!empty($error)): ?>
-        <div class="error-message">
-            <?php echo htmlspecialchars($error); ?>
-        </div>
-    <?php endif; ?>
-
-    <form method="POST">
-
-        <div class="form-group">
-            <label>Email Address</label>
-
-            <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <label>Password</label>
-
-            <input
-                type="password"
-                name="password"
-                id="password"
-                placeholder="Enter your password"
-                required
-            >
-        </div>
-
-        <div class="show-password">
-            <input type="checkbox" id="showPassword">
-            <label for="showPassword">
-                Show Password
-            </label>
-        </div>
-
-        <button type="submit" class="btn-login">
-            Log In
-        </button>
-
-    </form>
-
-    <div class="register-link">
-        No account yet?
-        <a href="register_user.php">
-            Create Account
-        </a>
-    </div>
-
-    <div class="admin-link">
-        <a href="login.php">
-            ← Admin Login
-        </a>
-    </div>
-
-    <div class="login-footer">
-        BRGY 727 Monitoring System
-    </div>
-
-</div>
-
-<script>
-document.getElementById("showPassword").addEventListener("change", function(){
-
-    const password =
-        document.getElementById("password");
-
-    password.type =
-        this.checked ? "text" : "password";
-
-});
-</script>
-
-</body>
-</html>
+}
