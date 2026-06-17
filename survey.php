@@ -1,17 +1,41 @@
 <?php
-// survey.php - Barangay Health Survey Form
 session_start();
+include 'db_connect.php';
 
-// Process form submission
 $submitted = false;
 $score = 0;
 $category = '';
 $message = '';
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $submitted = true;
 
-    // Calculate score from scored questions (Q1-Q10)
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $full_name = trim($_POST['full_name'] ?? '');
+    $age = (int)($_POST['age'] ?? 0);
+    $gender = $_POST['gender'] ?? '';
+    $address = trim($_POST['address'] ?? '');
+    $contact = trim($_POST['contact'] ?? '');
+    $health_status = $_POST['health_status'] ?? '';
+    $checkups = $_POST['checkups'] ?? '';
+    $illness_6mo = $_POST['illness_6mo'] ?? '';
+    $illness_specify = trim($_POST['illness_specify'] ?? '');
+
+    $conditions_array = $_POST['conditions'] ?? [];
+    $conditions = !empty($conditions_array) ? implode(", ", $conditions_array) : 'None';
+
+    $aware_dengue = $_POST['aware_dengue'] ?? 'No';
+    $aware_tb = $_POST['aware_tb'] ?? 'No';
+    $aware_diabetes = $_POST['aware_diabetes'] ?? 'No';
+    $aware_hypertension = $_POST['aware_hypertension'] ?? 'No';
+
+    $info_source = $_POST['info_source'] ?? '';
+    $info_source_other = trim($_POST['info_source_other'] ?? '');
+    $sufficient_knowledge = $_POST['sufficient_knowledge'] ?? '';
+    $interested_seminars = $_POST['interested_seminars'] ?? '';
+    $other_programs = trim($_POST['other_programs'] ?? '');
+
     $scored_questions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10'];
     foreach ($scored_questions as $q) {
         if (isset($_POST[$q])) {
@@ -19,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Determine category
     if ($score >= 24 && $score <= 30) {
         $category = 'Healthy Habits';
         $message = 'Great job! You maintain excellent health habits. Keep it up!';
@@ -30,6 +53,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $category = 'Not Healthy / Needs Evaluation';
         $message = 'Daily factors carry long-term medical risks. It is recommended to check in at the local barangay health station.';
     }
+
+    $stmt = $conn->prepare("INSERT INTO survey_responses 
+        (user_id, full_name, age, gender, address, contact, health_status, conditions, checkups, illness_6mo, illness_specify, 
+        q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, 
+        aware_dengue, aware_tb, aware_diabetes, aware_hypertension, info_source, info_source_other, 
+        sufficient_knowledge, interested_seminars, other_programs, total_score, category) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+    if ($stmt) {
+        $q1 = (int)($_POST['q1'] ?? 0); $q2 = (int)($_POST['q2'] ?? 0); $q3 = (int)($_POST['q3'] ?? 0);
+        $q4 = (int)($_POST['q4'] ?? 0); $q5 = (int)($_POST['q5'] ?? 0); $q6 = (int)($_POST['q6'] ?? 0);
+        $q7 = (int)($_POST['q7'] ?? 0); $q8 = (int)($_POST['q8'] ?? 0); $q9 = (int)($_POST['q9'] ?? 0); $q10 = (int)($_POST['q10'] ?? 0);
+
+        $stmt->bind_param("isissssssssiiiiiiiiiisssssssssis", 
+            $user_id, $full_name, $age, $gender, $address, $contact, $health_status, $conditions, $checkups, $illness_6mo, $illness_specify,
+            $q1, $q2, $q3, $q4, $q5, $q6, $q7, $q8, $q9, $q10,
+            $aware_dengue, $aware_tb, $aware_diabetes, $aware_hypertension, $info_source, $info_source_other,
+            $sufficient_knowledge, $interested_seminars, $other_programs, $score, $category
+        );
+        $stmt->execute();
+        $stmt->close();
+    } else {
+        $error = "Database Error: Unable to save response statistics. " . $conn->error;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -38,15 +85,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barangay Health Survey</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="survey.css">
 </head>
 <body>
 
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <div class="logo-section">
-                <div class="logo-icon-img"></div>
+                <div class="logo-icon-img">⚕</div>
                 <div class="logo-text">
                     <h1>Barangay Health Center</h1>
                     <p>Community Health Survey</p>
@@ -58,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="survey-container">
         <div class="survey-form">
 
-            <!-- Survey Header -->
             <div class="survey-header">
                 <h1>Barangay Health & Lifestyle Survey</h1>
                 <p class="disclaimer">
@@ -67,22 +112,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </p>
             </div>
 
-            <?php if ($submitted): ?>
-                <!-- Results Section -->
+            <?php if (!empty($error)): ?>
+                <div style="background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                    <?php echo htmlspecialchars($error); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($submitted && empty($error)): ?>
                 <div class="results-section">
                     <h2>Survey Results</h2>
                     <div class="score-display"><?php echo $score; ?> / 30</div>
-                    <div class="category-display"><?php echo $category; ?></div>
-                    <p class="message-display"><?php echo $message; ?></p>
+                    <div class="category-display"><?php echo htmlspecialchars($category); ?></div>
+                    <p class="message-display"><?php echo htmlspecialchars($message); ?></p>
                     <div class="button-group" style="margin-top: 20px;">
                         <a href="survey.php" class="btn btn-home">Take Survey Again</a>
+                        <a href="homepage.php" class="btn btn-clear">Back to Home</a>
                     </div>
                 </div>
             <?php else: ?>
 
                 <form method="POST" action="survey.php" id="surveyForm">
 
-                    <!-- ==================== PERSONAL INFORMATION ==================== -->
                     <div class="section">
                         <div class="section-title">Personal Information</div>
 
@@ -99,15 +149,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="question">
                             <div class="question-text"><span class="question-number">3.</span> Gender:</div>
                             <div class="options">
-                                <label class="option">
-                                    <input type="radio" name="gender" value="Male" required> Male
-                                </label>
-                                <label class="option">
-                                    <input type="radio" name="gender" value="Female" required> Female
-                                </label>
-                                <label class="option">
-                                    <input type="radio" name="gender" value="Rather not say" required> Rather not say
-                                </label>
+                                <label class="option"><input type="radio" name="gender" value="Male" required> Male</label>
+                                <label class="option"><input type="radio" name="gender" value="Female" required> Female</label>
+                                <label class="option"><input type="radio" name="gender" value="Rather not say" required> Rather not say</label>
                             </div>
                         </div>
 
@@ -122,7 +166,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- ==================== GENERAL HEALTH STATUS ==================== -->
                     <div class="section">
                         <div class="section-title">General Health Status</div>
 
@@ -170,112 +213,108 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- ==================== CATEGORY 1: DIET & HYDRATION ==================== -->
                     <div class="section">
                         <div class="section-title">Category 1: Diet & Hydration</div>
 
                         <div class="question">
                             <div class="question-text"><span class="question-number">Question 1:</span> How often do you eat fruits and vegetables?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q1" value="3" required> Daily (3 Points)</label>
-                                <label class="option"><input type="radio" name="q1" value="2" required> 3 to 5 times a week (2 Points)</label>
-                                <label class="option"><input type="radio" name="q1" value="1" required> 1 to 2 times a week OR Rarely (1 Point)</label>
+                                <label class="option"><input type="radio" name="q1" value="3" required> Daily </label>
+                                <label class="option"><input type="radio" name="q1" value="2" required> 3 to 5 times a week </label>
+                                <label class="option"><input type="radio" name="q1" value="1" required> 1 to 2 times a week OR Rarely </label>
                             </div>
                         </div>
 
                         <div class="question">
                             <div class="question-text"><span class="question-number">Question 2:</span> How frequently do you consume sugar-sweetened beverages like sodas, sweet milk teas, energy drinks, or instant powdered juices?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q2" value="3" required> Rarely, or less than once a week (3 Points)</label>
-                                <label class="option"><input type="radio" name="q2" value="2" required> A few times over the span of a week (2 Points)</label>
-                                <label class="option"><input type="radio" name="q2" value="1" required> Every single day (1 Point)</label>
+                                <label class="option"><input type="radio" name="q2" value="3" required> Rarely, or less than once a week </label>
+                                <label class="option"><input type="radio" name="q2" value="2" required> A few times over the span of a week </label>
+                                <label class="option"><input type="radio" name="q2" value="1" required> Every single day </label>
                             </div>
                         </div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">Question 3:</span> How many glasses of plain water do you drink throughout the day? <em>(Note: 1 glass = approx. 250mL)</em></div>
+                            <div class="question-text"><span class="question-number">Question 3:</span> How many glasses of plain water do you drink throughout the day?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q3" value="3" required> 8 glasses or more (3 Points)</label>
-                                <label class="option"><input type="radio" name="q3" value="2" required> 4 to 7 glasses (2 Points)</label>
-                                <label class="option"><input type="radio" name="q3" value="1" required> 3 glasses or fewer (1 Point)</label>
+                                <label class="option"><input type="radio" name="q3" value="3" required> 8 glasses or more </label>
+                                <label class="option"><input type="radio" name="q3" value="2" required> 4 to 7 glasses </label>
+                                <label class="option"><input type="radio" name="q3" value="1" required> 3 glasses or fewer </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ==================== CATEGORY 2: DAILY LIFESTYLE & HABITS ==================== -->
                     <div class="section">
                         <div class="section-title">Category 2: Daily Lifestyle & Habits</div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">Question 4:</span> On average, how many days a week do you do at least 30 minutes of moderate-intensity physical activity (such as brisk walking, sweeping, or bicycling)?</div>
+                            <div class="question-text"><span class="question-number">Question 4:</span> On average, how many days a week do you do at least 30 minutes of moderate-intensity physical activity?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q4" value="3" required> 5 or more days (3 Points)</label>
-                                <label class="option"><input type="radio" name="q4" value="2" required> 1 to 4 days (2 Points)</label>
-                                <label class="option"><input type="radio" name="q4" value="1" required> 0 days / None (1 Point)</label>
+                                <label class="option"><input type="radio" name="q4" value="3" required> 5 or more days </label>
+                                <label class="option"><input type="radio" name="q4" value="2" required> 1 to 4 days </label>
+                                <label class="option"><input type="radio" name="q4" value="1" required> 0 days / None </label>
                             </div>
                         </div>
 
                         <div class="question">
                             <div class="question-text"><span class="question-number">Question 5:</span> How many hours of restful sleep do you manage to get on an average night?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q5" value="3" required> 7 to 9 hours (3 Points)</label>
-                                <label class="option"><input type="radio" name="q5" value="2" required> 6 to 10 or more hours (2 Points)</label>
-                                <label class="option"><input type="radio" name="q5" value="1" required> Fewer than 6 hours (1 Point)</label>
+                                <label class="option"><input type="radio" name="q5" value="3" required> 7 to 9 hours </label>
+                                <label class="option"><input type="radio" name="q5" value="2" required> 6 to 10 or more hours </label>
+                                <label class="option"><input type="radio" name="q5" value="1" required> Fewer than 6 hours </label>
                             </div>
                         </div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">Question 6:</span> Outside of your primary job or school duties, how many hours a day do you spend sitting down looking at screens (TV, mobile phone, or computer)?</div>
+                            <div class="question-text"><span class="question-number">Question 6:</span> Outside of your primary job or school duties, how many hours a day do you spend sitting down looking at screens?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q6" value="3" required> Less than 2 hours (3 Points)</label>
-                                <label class="option"><input type="radio" name="q6" value="2" required> 2 to 4 hours (2 Points)</label>
-                                <label class="option"><input type="radio" name="q6" value="1" required> More than 4 hours (1 Point)</label>
+                                <label class="option"><input type="radio" name="q6" value="3" required> Less than 2 hours </label>
+                                <label class="option"><input type="radio" name="q6" value="2" required> 2 to 4 hours </label>
+                                <label class="option"><input type="radio" name="q6" value="1" required> More than 4 hours </label>
                             </div>
                         </div>
 
                         <div class="question">
                             <div class="question-text"><span class="question-number">Question 7:</span> Do you currently use any tobacco products, traditional cigarettes, or e-cigarettes/vapes?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q7" value="3" required> No, I have never smoked or used them / I quit completely (3 Points)</label>
-                                <label class="option"><input type="radio" name="q7" value="2" required> Sometimes / I smoke occasionally or am currently trying to cut back (2 Points)</label>
-                                <label class="option"><input type="radio" name="q7" value="1" required> Yes, I use tobacco or vape products on a daily basis (1 Point)</label>
+                                <label class="option"><input type="radio" name="q7" value="3" required> No, I have never smoked / I quit completely </label>
+                                <label class="option"><input type="radio" name="q7" value="2" required> Sometimes / I smoke occasionally or am trying to cut back </label>
+                                <label class="option"><input type="radio" name="q7" value="1" required> Yes, I use tobacco or vape products on a daily basis </label>
                             </div>
                         </div>
 
                         <div class="question">
                             <div class="question-text"><span class="question-number">Question 8:</span> How often do you consume alcoholic beverages?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q8" value="3" required> Never / Rarely (Less than once a month) (3 Points)</label>
-                                <label class="option"><input type="radio" name="q8" value="2" required> Moderately (1 to 2 standard drinks a week) (2 Points)</label>
-                                <label class="option"><input type="radio" name="q8" value="1" required> Frequently / Heavily (Multiple times a week or regular heavy drinking sessions) (1 Point)</label>
+                                <label class="option"><input type="radio" name="q8" value="3" required> Never / Rarely </label>
+                                <label class="option"><input type="radio" name="q8" value="2" required> Moderately </label>
+                                <label class="option"><input type="radio" name="q8" value="1" required> Frequently / Heavily </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ==================== CATEGORY 3: MENTAL & PREVENTIVE HEALTH ==================== -->
                     <div class="section">
                         <div class="section-title">Category 3: Mental & Preventive Health</div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">Question 9:</span> Over the past two weeks, how often have you been bothered by feeling down, depressed, or hopeless, or having little interest or pleasure in doing things?</div>
+                            <div class="question-text"><span class="question-number">Question 9:</span> Over the past two weeks, how often have you been bothered by feeling down, depressed, or hopeless?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q9" value="3" required> Not at all / Seldom (3 Points)</label>
-                                <label class="option"><input type="radio" name="q9" value="2" required> Several days across the week (2 Points)</label>
-                                <label class="option"><input type="radio" name="q9" value="1" required> Nearly every single day (1 Point)</label>
+                                <label class="option"><input type="radio" name="q9" value="3" required> Not at all / Seldom </label>
+                                <label class="option"><input type="radio" name="q9" value="2" required> Several days across the week </label>
+                                <label class="option"><input type="radio" name="q9" value="1" required> Nearly every single day </label>
                             </div>
                         </div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">Question 10:</span> When was the last time you had standard health metrics (such as your blood pressure, weight, or blood sugar) checked by a nurse or doctor?</div>
+                            <div class="question-text"><span class="question-number">Question 10:</span> When was the last time you had standard health metrics checked by a nurse or doctor?</div>
                             <div class="options">
-                                <label class="option"><input type="radio" name="q10" value="3" required> Within the past year (3 Points)</label>
-                                <label class="option"><input type="radio" name="q10" value="2" required> 1 to 2 years ago (2 Points)</label>
-                                <label class="option"><input type="radio" name="q10" value="1" required> More than 2 years ago / Never (1 Point)</label>
+                                <label class="option"><input type="radio" name="q10" value="3" required> Within the past year </label>
+                                <label class="option"><input type="radio" name="q10" value="2" required> 1 to 2 years ago </label>
+                                <label class="option"><input type="radio" name="q10" value="1" required> More than 2 years ago / Never </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ==================== CATEGORY 4: AWARENESS OF COMMON ILLNESS ==================== -->
                     <div class="section">
                         <div class="section-title">Category 4: Awareness of Common Illness</div>
 
@@ -293,22 +332,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <tr>
                                         <td><strong>Dengue</strong></td>
                                         <td class="checkbox-cell"><input type="radio" name="aware_dengue" value="Yes" required></td>
-                                        <td class="checkbox-cell"><input type="radio" name="aware_dengue" value="No" required checked></td>
+                                        <td class="checkbox-cell"><input type="radio" name="aware_dengue" value="No" required></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Tuberculosis</strong></td>
                                         <td class="checkbox-cell"><input type="radio" name="aware_tb" value="Yes" required></td>
-                                        <td class="checkbox-cell"><input type="radio" name="aware_tb" value="No" required checked></td>
+                                        <td class="checkbox-cell"><input type="radio" name="aware_tb" value="No" required></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Diabetes</strong></td>
                                         <td class="checkbox-cell"><input type="radio" name="aware_diabetes" value="Yes" required></td>
-                                        <td class="checkbox-cell"><input type="radio" name="aware_diabetes" value="No" required checked></td>
+                                        <td class="checkbox-cell"><input type="radio" name="aware_diabetes" value="No" required></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Hypertension (High Blood Pressure)</strong></td>
                                         <td class="checkbox-cell"><input type="radio" name="aware_hypertension" value="Yes" required></td>
-                                        <td class="checkbox-cell"><input type="radio" name="aware_hypertension" value="No" required checked></td>
+                                        <td class="checkbox-cell"><input type="radio" name="aware_hypertension" value="No" required></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -352,81 +391,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- ==================== DISEASE DIAGNOSIS TABLE ==================== -->
-                    <div class="section">
-                        <div class="section-title">Disease Diagnosis History</div>
-
-                        <div class="question">
-                            <div class="question-text"><span class="question-number">Question 16:</span> Have you been diagnosed with any of the following diseases?</div>
-                            <table class="disease-table">
-                                <thead>
-                                    <tr>
-                                        <th>Disease</th>
-                                        <th class="radio-cell">Yes</th>
-                                        <th class="radio-cell">No</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Dengue</td>
-                                        <td class="radio-cell"><input type="radio" name="dengue" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="dengue" value="no" checked></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Leptospirosis</td>
-                                        <td class="radio-cell"><input type="radio" name="leptospirosis" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="leptospirosis" value="no" checked></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Influenza</td>
-                                        <td class="radio-cell"><input type="radio" name="influenza" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="influenza" value="no" checked></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Typhoid</td>
-                                        <td class="radio-cell"><input type="radio" name="typhoid" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="typhoid" value="no" checked></td>
-                                    </tr>
-                                    <tr>
-                                        <td>COVID-19</td>
-                                        <td class="radio-cell"><input type="radio" name="covid" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="covid" value="no" checked></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tuberculosis</td>
-                                        <td class="radio-cell"><input type="radio" name="tuberculosis" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="tuberculosis" value="no" checked></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Diabetes</td>
-                                        <td class="radio-cell"><input type="radio" name="diabetes" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="diabetes" value="no" checked></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Hypertension (High Blood Pressure)</td>
-                                        <td class="radio-cell"><input type="radio" name="hypertension" value="yes" required></td>
-                                        <td class="radio-cell"><input type="radio" name="hypertension" value="no" checked></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- ==================== ADDITIONAL FEEDBACK ==================== -->
-                    <div class="section">
-                        <div class="section-title">Additional Feedback</div>
-
-                        <div class="question">
-                            <div class="question-text"><span class="question-number">Question 17:</span> What health programs would you like to see in Barangay 727?</div>
-                            <textarea name="suggestions" class="textarea-input" placeholder="Please share your suggestions..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Button Group -->
                     <div class="button-group">
                         <button type="submit" class="btn btn-submit">Submit Survey</button>
                         <button type="reset" class="btn btn-clear">Clear Form</button>
-                        <a href="index.php" class="btn btn-home">Back to Homepage</a>
+                        <a href="homepage.php" class="btn btn-home">Back to Homepage</a>
                     </div>
 
                 </form>
