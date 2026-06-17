@@ -1,12 +1,10 @@
-<?php
-?>
 <!DOCTYPE html>
 <html lang="tl">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Brgy 727 Community Health Awareness System</title>
-    <link rel="stylesheet" href="homepage.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
@@ -43,7 +41,6 @@
     <section class="health-alert-section">
         <div class="health-alert-container">
 
-            <!-- Header with Alert Icon -->
             <div class="health-alert-header">
                 <div class="alert-icon-circle">⚠️</div>
                 <div>
@@ -56,7 +53,6 @@
                 </div>
             </div>
 
-            <!-- Disease Cards Grid -->
             <div class="disease-cards">
                 <div class="disease-card">
                     <h3>Dengue</h3>
@@ -89,15 +85,13 @@
                 </div>
             </div>
 
-            <!-- Footer Note -->
             <div class="health-footer">
                 <p>Information based on DOH Philippines and WHO guidelines. Consult your barangay health worker for personalized advice.</p>
             </div>
         </div>
     </section>
 
-    <!-- DISEASE PREVENTION GUIDE  -->
-<?php
+    <?php
 
 $diseases = [
 
@@ -334,8 +328,7 @@ window.addEventListener('click', function(e){
 });
 
 </script>
-     <!-- TRUSTED WEBSITES -->
-    <section class="trusted-sites-section">
+     <section class="trusted-sites-section">
 
     <div class="trusted-sites-container">
 
@@ -449,7 +442,6 @@ window.addEventListener('click', function(e){
         </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="hotline-footer">
         <div class="footer-container">
             <h2 class="footer-title">BRGY 727 MONITORING SYSTEM</h2>
