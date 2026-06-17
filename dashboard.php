@@ -1,147 +1,138 @@
 <?php
+session_start();
 include 'db_connect.php';
 
-// COUNT BY CATEGORY
-$healthy = $conn->query("SELECT COUNT(*) AS total FROM survey_responses WHERE score BETWEEN 24 AND 30")->fetch_assoc()['total'];
+if (!isset($_SESSION["adminLoggedIn"]) || $_SESSION["adminLoggedIn"] !== true) {
+    header("Location: login.php");
+    exit();
+}
 
-$moderate = $conn->query("SELECT COUNT(*) AS total FROM survey_responses WHERE score BETWEEN 16 AND 23")->fetch_assoc()['total'];
+$healthy = 0;
+$moderate = 0;
+$notHealthy = 0;
 
-$notHealthy = $conn->query("SELECT COUNT(*) AS total FROM survey_responses WHERE score BETWEEN 10 AND 15")->fetch_assoc()['total'];
+$healthy_query = $conn->query("SELECT COUNT(*) AS total FROM survey_responses WHERE total_score BETWEEN 24 AND 30");
+if ($healthy_query) {
+    $healthy = $healthy_query->fetch_assoc()['total'];
+}
 
-// GET ALL RESPONSES
+$moderate_query = $conn->query("SELECT COUNT(*) AS total FROM survey_responses WHERE total_score BETWEEN 16 AND 23");
+if ($moderate_query) {
+    $moderate = $moderate_query->fetch_assoc()['total'];
+}
+
+$notHealthy_query = $conn->query("SELECT COUNT(*) AS total FROM survey_responses WHERE total_score BETWEEN 10 AND 15");
+if ($notHealthy_query) {
+    $notHealthy = $notHealthy_query->fetch_assoc()['total'];
+}
+
 $result = $conn->query("SELECT * FROM survey_responses ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="tl">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barangay Health Dashboard</title>
-    <style>
-        body {
-            font-family: system-ui, Arial;
-            background: #f4f7fb;
-            margin: 0;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0f172a, #1e3a8a);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
-            width: 200px;
-            text-align: center;
-        }
-
-        .healthy { background: #16a34a; }
-        .moderate { background: #f59e0b; }
-        .bad { background: #dc2626; }
-
-        table {
-            width: 95%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        th {
-            background: #1e3a8a;
-            color: white;
-            padding: 12px;
-        }
-
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            text-align: center;
-        }
-
-        tr:hover {
-            background: #f1f5f9;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 14px;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            margin: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="dashboard.css">
 </head>
-
 <body>
 
-<div class="header">
-    <h1>Barangay Health Dashboard</h1>
-</div>
+    <header class="header">
+        <h1>BRGY 727 Health Administration Panel</h1>
+        <div class="header-actions">
+            <a href="homepage.php" class="btn home-btn">Homepage</a>
+            <a href="survey.php" class="btn home-btn">View Survey</a>
+        </div>
+    </header>
 
-<div style="text-align:center;">
-    <a href="survey.php" class="btn">Back to Survey</a>
-</div>
+    <main class="stats-container">
+        <div class="stat-card">
+            <div class="stat-number"><?php echo $healthy; ?></div>
+            <div class="stat-label">Healthy Habits (24 - 30)</div>
+        </div>
 
-<div class="stats">
+        <div class="stat-card">
+            <div class="stat-number"><?php echo $moderate; ?></div>
+            <div class="stat-label">Moderate Habits (16 - 23)</div>
+        </div>
 
-    <div class="card healthy">
-        <h2><?php echo $healthy; ?></h2>
-        <p>Healthy Habits</p>
-    </div>
+        <div class="stat-card">
+            <div class="stat-number"><?php echo $notHealthy; ?></div>
+            <div class="stat-label">Needs Evaluation (10 - 15)</div>
+        </div>
+    </main>
 
-    <div class="card moderate">
-        <h2><?php echo $moderate; ?></h2>
-        <p>Moderate Habits</p>
-    </div>
+    <section class="table-section">
+        <div class="section-header">
+            <div class="section-title">Submitted Resident Health Profiles</div>
+        </div>
 
-    <div class="card bad">
-        <h2><?php echo $notHealthy; ?></h2>
-        <p>Needs Evaluation</p>
-    </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Contact</th>
+                        <th>Calculated Score</th>
+                        <th>Health Evaluation Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($result && $result->num_rows > 0): ?>
+                        <?php while($row = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td><strong>#<?php echo $row['id']; ?></strong></td>
+                                <td><?php echo htmlspecialchars($row['full_name'] ?? 'Anonymous'); ?></td>
+                                <td><?php echo htmlspecialchars($row['age'] ?? 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($row['gender'] ?? 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($row['contact'] ?? 'N/A'); ?></td>
+                                <td>
+                                    <strong><?php echo $row['total_score']; ?> / 30</strong>
+                                    <div class="risk-bar-container">
+                                        <?php 
+                                            $score = $row['total_score'];
+                                            $bar_class = 'risk-bar-low';
+                                            if ($score >= 24) { $bar_class = 'risk-bar-low'; }
+                                            elseif ($score >= 16) { $bar_class = 'risk-bar-medium'; }
+                                            else { $bar_class = 'risk-bar-high'; }
+                                        ?>
+                                        <div class="risk-bar <?php echo $bar_class; ?>" style="width: <?php echo ($score / 30) * 100; ?>%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <?php 
+                                        $cat = $row['category'] ?? 'Needs Evaluation';
+                                        $badge_class = 'risk-high';
+                                        if (strpos(strtolower($cat), 'healthy habits') !== false) { $badge_class = 'risk-low'; }
+                                        elseif (strpos(strtolower($cat), 'moderate') !== false) { $badge_class = 'risk-medium'; }
+                                    ?>
+                                    <span class="risk-badge <?php echo $badge_class; ?>"><?php echo htmlspecialchars($cat); ?></span>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📋</div>
+                                    <div class="empty-state-text">No health records submitted yet in this barangay group container.</div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-</div>
-
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Score</th>
-        <th>Category</th>
-        <th>Q1</th>
-        <th>Q2</th>
-        <th>Q3</th>
-        <th>Q4</th>
-        <th>Q5</th>
-    </tr>
-
-    <?php while($row = $result->fetch_assoc()): ?>
-    <tr>
-        <td><?php echo $row['id']; ?></td>
-        <td><?php echo $row['score']; ?></td>
-        <td><?php echo $row['category']; ?></td>
-        <td><?php echo $row['q1']; ?></td>
-        <td><?php echo $row['q2']; ?></td>
-        <td><?php echo $row['q3']; ?></td>
-        <td><?php echo $row['q4']; ?></td>
-        <td><?php echo $row['q5']; ?></td>
-    </tr>
-    <?php endwhile; ?>
-
-</table>
+    <footer class="footer">
+        © 2026 Barangay 727 Internal Health Registry Monitoring Environment.
+    </footer>
 
 </body>
 </html>
