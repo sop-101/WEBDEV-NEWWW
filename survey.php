@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $q4 = (int)($_POST['q4'] ?? 0); $q5 = (int)($_POST['q5'] ?? 0); $q6 = (int)($_POST['q6'] ?? 0);
         $q7 = (int)($_POST['q7'] ?? 0); $q8 = (int)($_POST['q8'] ?? 0); $q9 = (int)($_POST['q9'] ?? 0); $q10 = (int)($_POST['q10'] ?? 0);
 
+        // FIXED: Aligned all variables precisely with the binding definitions to stop execution crashes
         $stmt->bind_param("isissssssssiiiiiiiiiisssssssssis", 
             $user_id, $full_name, $age, $gender, $address, $contact, $health_status, $conditions, $checkups, $illness_6mo, $illness_specify,
             $q1, $q2, $q3, $q4, $q5, $q6, $q7, $q8, $q9, $q10,
@@ -126,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p class="message-display"><?php echo htmlspecialchars($message); ?></p>
                     <div class="button-group" style="margin-top: 20px;">
                         <a href="survey.php" class="btn btn-home">Take Survey Again</a>
-                        <a href="homepage.php" class="btn btn-clear">Back to Home</a>
+                        <a href="index.php" class="btn btn-clear">Back to Home</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -394,7 +395,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="button-group">
                         <button type="submit" class="btn btn-submit">Submit Survey</button>
                         <button type="reset" class="btn btn-clear">Clear Form</button>
-                        <a href="homepage.php" class="btn btn-home">Back to Homepage</a>
+                        <a href="index.php" class="btn btn-home">Back to Homepage</a>
                     </div>
 
                 </form>
