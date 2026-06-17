@@ -1,20 +1,64 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 include 'db_connect.php';
-include 'email_api_config.php';
 
-/* ALL YOUR CURRENT PHP CODE HERE */
+if (file_exists('email_api_config.php')) {
+    include 'email_api_config.php';
+}
 
 $error = "";
 $success = "";
 
-/* validation code */
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $firstname   = trim($_POST['firstname'] ?? '');
+    $lastname    = trim($_POST['lastname'] ?? '');
+    $middlename  = trim($_POST['middlename'] ?? '');
+    $suffix      = trim($_POST['suffix'] ?? '');
+    $email       = trim($_POST['email'] ?? '');
+    $password    = $_POST['password'] ?? '';
+    $confirm_pwd = $_POST['confirm_password'] ?? '';
 
+    if (empty($firstname) || empty($lastname) || empty($email) || empty($password) || empty($confirm_pwd)) {
+        $error = "Please fill in all required fields.";
+    } elseif ($password !== $confirm_pwd) {
+        $error = "Password and Confirm Password do not match!";
+    } else {
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if ($res->num_rows > 0) {
+            $error = "This email address is already registered!";
+        } else {
+            $m_name = (!empty($middlename) && !isset($_POST['no_middle'])) ? $middlename . " " : "";
+            $s_name = (!empty($suffix) && !isset($_POST['no_suffix'])) ? " " . $suffix : "";
+            $fullname = trim($firstname . " " . $m_name . $lastname . $s_name);
+
+            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+            $insert_stmt = $conn->prepare("INSERT INTO users (username, password, email, firstname, lastname, middlename, suffix, fullname) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $insert_stmt->bind_param("ssssssss", $email, $hashed_password, $email, $firstname, $lastname, $middlename, $suffix, $fullname);
+
+            if ($insert_stmt->execute()) {
+                $success = "Account created successfully! You can now log in.";
+                $_POST = array(); 
+            } else {
+                $error = "An error occurred during registration: " . $conn->error;
+            }
+            $insert_stmt->close();
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="tl">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +67,7 @@ $success = "";
 </head>
 <body>
 
-    <div class="register-container">
+<div class="register-container">
 
     <div class="logo-section">
         <h1>BRGY 727</h1>
@@ -37,14 +81,15 @@ $success = "";
         <div class="error-message">
             <?php echo htmlspecialchars($error); ?>
         </div>
-        <h2>Create Account</h2>0
+    <?php endif; ?>
 
-        <?php if (!empty($error)): ?>
-            <div class="error-message">
-                <?php echo htmlspecialchars($error); ?>
-            </div>
-        <?php endif; ?>
+    <?php if (!empty($success)): ?>
+        <div class="success-message">
+            <?php echo htmlspecialchars($success); ?>
+        </div>
+    <?php endif; ?>
 
+    <form method="POST" action="register_user.php">
         <div class="name-grid">
             <div class="form-group">
                 <label>First Name</label>
@@ -63,7 +108,7 @@ $success = "";
                     <input type="text" name="middlename" placeholder="Middle Name" value="<?php echo htmlspecialchars($_POST['middlename'] ?? ''); ?>">
                 </div>
                 <label class="sub-checkbox">
-                    <input type="checkbox" name="no_middle"> Not Applicable
+                    <input type="checkbox" name="no_middle" <?php echo isset($_POST['no_middle']) ? 'checked' : ''; ?>> Not Applicable
                 </label>
             </div>
             <div>
@@ -72,7 +117,7 @@ $success = "";
                     <input type="text" name="suffix" placeholder="Example: Jr" value="<?php echo htmlspecialchars($_POST['suffix'] ?? ''); ?>">
                 </div>
                 <label class="sub-checkbox">
-                    <input type="checkbox" name="no_suffix"> Not Applicable
+                    <input type="checkbox" name="no_suffix" <?php echo isset($_POST['no_suffix']) ? 'checked' : ''; ?>> Not Applicable
                 </label>
             </div>
         </div>
@@ -129,12 +174,11 @@ $success = "";
         </div>
 
         <button type="submit" class="btn-register">Submit</button>
-
     </form>
 
     <div class="login-link">
         Already have an account?
-        <a href="login.php">Log In</a>
+        <a href="login_user.php">Log In</a>
     </div>
 
 </div>
@@ -143,17 +187,15 @@ $success = "";
 function togglePasswords() {
     const password = document.getElementById("password");
     const confirmPassword = document.getElementById("confirm_password");
-
-        if (password.type === "password") {
-            password.type = "text";
-            confirmPassword.type = "text";
-        } else {
-            password.type = "password";
-            confirmPassword.type = "password";
-        }
+    if (password.type === "password") {
+        password.type = "text";
+        confirmPassword.type = "text";
+    } else {
+        password.type = "password";
+        confirmPassword.type = "password";
     }
+}
 </script>
 
 </body>
-
 </html>
