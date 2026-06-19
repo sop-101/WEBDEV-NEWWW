@@ -12,7 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $submitted = true;
 
     $user_id = $_SESSION['user_id'] ?? 0;
-    $full_name = trim($_POST['full_name'] ?? '');
+    $first_name = trim($_POST['first_name'] ?? '');
+    $middle_name = trim($_POST['middle_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
     $age = (int)($_POST['age'] ?? 0);
     $gender = $_POST['gender'] ?? '';
     $address = trim($_POST['address'] ?? '');
@@ -36,6 +38,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $interested_seminars = $_POST['interested_seminars'] ?? '';
     $other_programs = trim($_POST['other_programs'] ?? '');
 
+    // BACKEND LOOPHOLE FIX: Validate Philippine Mobile Number (Exactly 11 digits, starts with 09)
+    if (!preg_match('/^09\d{9}$/', $contact)) {
+        $error = "Invalid Contact Number. It must be exactly 11 digits and start with '09'.";
+    }
+
+    // BACKEND LOOPHOLE FIX: Validate Age Range (Must be between 16 and 100, custom hidden max message)
+    if ($age < 16 || $age > 100) {
+        $error = "Invalid Age. You must be 16 years or older to complete this survey.";
+    }
+
     $scored_questions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10'];
     foreach ($scored_questions as $q) {
         if (isset($_POST[$q])) {
@@ -54,29 +66,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'Daily factors carry long-term medical risks. It is recommended to check in at the local barangay health station.';
     }
 
-    $stmt = $conn->prepare("INSERT INTO survey_responses 
-        (user_id, full_name, age, gender, address, contact, health_status, conditions, checkups, illness_6mo, illness_specify, 
-        q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, 
-        aware_dengue, aware_tb, aware_diabetes, aware_hypertension, info_source, info_source_other, 
-        sufficient_knowledge, interested_seminars, other_programs, total_score, category) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // Only proceed to database insertion if there are no validation errors
+    if (empty($error)) {
+        $stmt = $conn->prepare("INSERT INTO survey_responses 
+            (user_id, first_name, middle_name, last_name, age, gender, address, contact, health_status, conditions, checkups, illness_6mo, illness_specify, 
+            q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, 
+            aware_dengue, aware_tb, aware_diabetes, aware_hypertension, info_source, info_source_other, 
+            sufficient_knowledge, interested_seminars, other_programs, total_score, category) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    if ($stmt) {
-        $q1 = (int)($_POST['q1'] ?? 0); $q2 = (int)($_POST['q2'] ?? 0); $q3 = (int)($_POST['q3'] ?? 0);
-        $q4 = (int)($_POST['q4'] ?? 0); $q5 = (int)($_POST['q5'] ?? 0); $q6 = (int)($_POST['q6'] ?? 0);
-        $q7 = (int)($_POST['q7'] ?? 0); $q8 = (int)($_POST['q8'] ?? 0); $q9 = (int)($_POST['q9'] ?? 0); $q10 = (int)($_POST['q10'] ?? 0);
+        if ($stmt) {
+            $q1 = (int)($_POST['q1'] ?? 0); $q2 = (int)($_POST['q2'] ?? 0); $q3 = (int)($_POST['q3'] ?? 0);
+            $q4 = (int)($_POST['q4'] ?? 0); $q5 = (int)($_POST['q5'] ?? 0); $q6 = (int)($_POST['q6'] ?? 0);
+            $q7 = (int)($_POST['q7'] ?? 0); $q8 = (int)($_POST['q8'] ?? 0); $q9 = (int)($_POST['q9'] ?? 0); $q10 = (int)($_POST['q10'] ?? 0);
 
-        // FIXED: Aligned all variables precisely with the binding definitions to stop execution crashes
-        $stmt->bind_param("isissssssssiiiiiiiiiisssssssssis", 
-            $user_id, $full_name, $age, $gender, $address, $contact, $health_status, $conditions, $checkups, $illness_6mo, $illness_specify,
-            $q1, $q2, $q3, $q4, $q5, $q6, $q7, $q8, $q9, $q10,
-            $aware_dengue, $aware_tb, $aware_diabetes, $aware_hypertension, $info_source, $info_source_other,
-            $sufficient_knowledge, $interested_seminars, $other_programs, $score, $category
-        );
-        $stmt->execute();
-        $stmt->close();
+            $stmt->bind_param("isssissssssssiiiiiiiiiisssssssssis", 
+                $user_id, $first_name, $middle_name, $last_name, $age, $gender, $address, $contact, $health_status, $conditions, $checkups, $illness_6mo, $illness_specify,
+                $q1, $q2, $q3, $q4, $q5, $q6, $q7, $q8, $q9, $q10,
+                $aware_dengue, $aware_tb, $aware_diabetes, $aware_hypertension, $info_source, $info_source_other,
+                $sufficient_knowledge, $interested_seminars, $other_programs, $score, $category
+            );
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            $error = "Database Error: Unable to save response statistics. " . $conn->error;
+        }
     } else {
-        $error = "Database Error: Unable to save response statistics. " . $conn->error;
+        // Reset submission flow state due to validation exceptions
+        $submitted = false;
     }
 }
 ?>
@@ -114,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <?php if (!empty($error)): ?>
-                <div style="background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                <div style="background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600;">
                     <?php echo htmlspecialchars($error); ?>
                 </div>
             <?php endif; ?>
@@ -122,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($submitted && empty($error)): ?>
                 <div class="results-section">
                     <h2>Survey Results</h2>
-                    <div class="score-display"><?php echo $score; ?> / 30</div>
+                    <div class="score-display"><?php echo htmlspecialchars($score); ?> / 30</div>
                     <div class="category-display"><?php echo htmlspecialchars($category); ?></div>
                     <p class="message-display"><?php echo htmlspecialchars($message); ?></p>
                     <div class="button-group" style="margin-top: 20px;">
@@ -138,17 +155,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="section-title">Personal Information</div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">1.</span> Full Name (Ex: Juan M. Dela Cruz):</div>
-                            <input type="text" name="full_name" class="text-input" placeholder="Enter your full name" required>
+                            <div class="question-text"><span class="question-number">1.</span> First Name (Ex: Juan):</div>
+                            <input type="text" name="first_name" class="text-input" placeholder="Enter your first name" required>
+                        </div>
+                        
+                        <div class="question">
+                            <div class="question-text"><span class="question-number">2.</span> Middle Name (Ex: Manalo):</div>
+                            <input type="text" name="middle_name" class="text-input" placeholder="Enter your middle name" required>
+                        </div>
+                        
+                        <div class="question">
+                            <div class="question-text"><span class="question-number">3.</span> Last Name (Ex: Dela Cruz):</div>
+                            <input type="text" name="last_name" class="text-input" placeholder="Enter your last name" required>
                         </div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">2.</span> Age:</div>
-                            <input type="number" name="age" class="text-input" placeholder="Enter your age" min="1" max="120" required>
+                            <div class="question-text"><span class="question-number">4.</span> Age:</div>
+                            <input type="number" 
+                                   name="age" 
+                                   class="text-input" 
+                                   placeholder="Enter your age (Must be 16 or above)" 
+                                   min="16" 
+                                   max="100" 
+                                   title="You must be 16 years old or older to participate." 
+                                   required>
                         </div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">3.</span> Gender:</div>
+                            <div class="question-text"><span class="question-number">5.</span> Gender:</div>
                             <div class="options">
                                 <label class="option"><input type="radio" name="gender" value="Male" required> Male</label>
                                 <label class="option"><input type="radio" name="gender" value="Female" required> Female</label>
@@ -157,13 +191,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">4.</span> District / Address:</div>
+                            <div class="question-text"><span class="question-number">6.</span> District / Address:</div>
                             <input type="text" name="address" class="text-input" placeholder="Enter your district or address" required>
                         </div>
 
                         <div class="question">
-                            <div class="question-text"><span class="question-number">5.</span> Contact Number:</div>
-                            <input type="tel" name="contact" class="text-input" placeholder="Enter your contact number" required>
+                            <div class="question-text"><span class="question-number">7.</span> Contact Number:</div>
+                            <input type="text" 
+                                   name="contact" 
+                                   class="text-input" 
+                                   placeholder="Ex: 09123456789" 
+                                   maxlength="11" 
+                                   pattern="^09\d{9}$" 
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                   title="Phone number must be exactly 11 digits and start with 09" 
+                                   required>
                         </div>
                     </div>
 
