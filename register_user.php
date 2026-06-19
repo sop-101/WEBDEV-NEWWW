@@ -21,38 +21,54 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email       = trim($_POST['email'] ?? '');
     $password    = $_POST['password'] ?? '';
     $confirm_pwd = $_POST['confirm_password'] ?? '';
+    
+    $no_middle   = isset($_POST['no_middle']);
+    $no_suffix   = isset($_POST['no_suffix']);
 
+    // Backend validation logic for required states
     if (empty($firstname) || empty($lastname) || empty($email) || empty($password) || empty($confirm_pwd)) {
         $error = "Please fill in all required fields.";
+    } elseif (empty($middlename) && !$no_middle) {
+        $error = "Please provide a Middle Name or check 'Not Applicable'.";
+    } elseif (empty($suffix) && !$no_suffix) {
+        $error = "Please provide a Suffix or check 'Not Applicable'.";
     } elseif ($password !== $confirm_pwd) {
         $error = "Password and Confirm Password do not match!";
     } else {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $res = $stmt->get_result();
+        // Enforce Password Requirements
+        $password_regex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/';
 
-        if ($res->num_rows > 0) {
-            $error = "This email address is already registered!";
+        if (!preg_match($password_regex, $password)) {
+            $error = "Password does not meet the requirements! It must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
         } else {
-            $m_name = (!empty($middlename) && !isset($_POST['no_middle'])) ? $middlename . " " : "";
-            $s_name = (!empty($suffix) && !isset($_POST['no_suffix'])) ? " " . $suffix : "";
-            $fullname = trim($firstname . " " . $m_name . $lastname . $s_name);
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $res = $stmt->get_result();
 
-            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-            $insert_stmt = $conn->prepare("INSERT INTO users (username, password, email, firstname, lastname, middlename, suffix, fullname) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $insert_stmt->bind_param("ssssssss", $email, $hashed_password, $email, $firstname, $lastname, $middlename, $suffix, $fullname);
-
-            if ($insert_stmt->execute()) {
-                $success = "Account created successfully! You can now log in.";
-                $_POST = array(); 
+            if ($res->num_rows > 0) {
+                $error = "This email address is already registered!";
             } else {
-                $error = "An error occurred during registration: " . $conn->error;
+                // Formulate full name based on checkbox status
+                $m_name = (!empty($middlename) && !$no_middle) ? $middlename . " " : "";
+                $s_name = (!empty($suffix) && !$no_suffix) ? " " . $suffix : "";
+                $fullname = trim($firstname . " " . $m_name . $lastname . $s_name);
+
+                $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+                $insert_stmt = $conn->prepare("INSERT INTO users (username, password, email, firstname, lastname, middlename, suffix, fullname) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $insert_stmt->bind_param("ssssssss", $email, $hashed_password, $email, $firstname, $lastname, $middlename, $suffix, $fullname);
+
+                if ($insert_stmt->execute()) {
+                    $success = "Account created successfully! You can now log in.";
+                    $_POST = array(); 
+                } else {
+                    $error = "An error occurred during registration: " . $conn->error;
+                }
+                $insert_stmt->close();
             }
-            $insert_stmt->close();
+            $stmt->close();
         }
-        $stmt->close();
     }
 }
 ?>
@@ -89,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="register_user.php">
+    <form method="POST" action="register_user.php" id="registrationForm">
         <div class="name-grid">
             <div class="form-group">
                 <label>First Name</label>
@@ -105,19 +121,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div>
                 <div class="form-group row-no-margin">
                     <label>Middle Name</label>
-                    <input type="text" name="middlename" placeholder="Middle Name" value="<?php echo htmlspecialchars($_POST['middlename'] ?? ''); ?>">
+                    <input type="text" id="middlename" name="middlename" placeholder="Middle Name" value="<?php echo htmlspecialchars($_POST['middlename'] ?? ''); ?>" required>
                 </div>
                 <label class="sub-checkbox">
-                    <input type="checkbox" name="no_middle" <?php echo isset($_POST['no_middle']) ? 'checked' : ''; ?>> Not Applicable
+                    <input type="checkbox" id="no_middle" name="no_middle" <?php echo isset($_POST['no_middle']) ? 'checked' : ''; ?>> Not Applicable
                 </label>
             </div>
             <div>
                 <div class="form-group row-no-margin">
                     <label>Suffix</label>
-                    <input type="text" name="suffix" placeholder="Example: Jr" value="<?php echo htmlspecialchars($_POST['suffix'] ?? ''); ?>">
+                    <input type="text" id="suffix" name="suffix" placeholder="Example: Jr" value="<?php echo htmlspecialchars($_POST['suffix'] ?? ''); ?>" required>
                 </div>
                 <label class="sub-checkbox">
-                    <input type="checkbox" name="no_suffix" <?php echo isset($_POST['no_suffix']) ? 'checked' : ''; ?>> Not Applicable
+                    <input type="checkbox" id="no_suffix" name="no_suffix" <?php echo isset($_POST['no_suffix']) ? 'checked' : ''; ?>> Not Applicable
                 </label>
             </div>
         </div>
@@ -195,6 +211,48 @@ function togglePasswords() {
         confirmPassword.type = "password";
     }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const middleInput = document.getElementById("middlename");
+    const middleCheck = document.getElementById("no_middle");
+    const suffixInput = document.getElementById("suffix");
+    const suffixCheck = document.getElementById("no_suffix");
+
+    function setupOptionalField(input, checkbox) {
+        // Toggle input logic based on checkbox state
+        function updateState() {
+            if (checkbox.checked) {
+                input.value = "";
+                input.disabled = true;
+                input.removeAttribute("required");
+            } else {
+                input.disabled = false;
+                input.setAttribute("required", "required");
+            }
+        }
+
+        checkbox.addEventListener("change", updateState);
+        
+        // If they start typing, make sure the checkbox unchecks
+        input.addEventListener("input", function() {
+            if (input.value.trim() !== "") {
+                checkbox.checked = false;
+                input.setAttribute("required", "required");
+            }
+        });
+
+        // Initialize state on page load (useful if old values are retained)
+        if (checkbox.checked) {
+            updateState();
+        } else if (input.value.trim() !== "") {
+            checkbox.checked = false;
+            input.setAttribute("required", "required");
+        }
+    }
+
+    setupOptionalField(middleInput, middleCheck);
+    setupOptionalField(suffixInput, suffixCheck);
+});
 </script>
 
 </body>
